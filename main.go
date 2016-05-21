@@ -4,8 +4,8 @@ import (
 	"os"
 	"fmt"
 	"github.com/codegangsta/cli"
-	"github.com/awslabs/aws-sdk-go/aws"
-	"github.com/awslabs/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
 const Version string = "0.1.0"
@@ -25,7 +25,7 @@ func main() {
 }
 
 func run() int {
-	svc := ec2.New(&aws.Config{Region: "ap-northeast-1"})
+	svc := ec2.New(&aws.Config{Region: aws.String("ap-northeast-1")})
 	resp, err := svc.DescribeInstances(nil)
 	if err != nil {
 		panic(err)
@@ -39,11 +39,27 @@ func run() int {
 					name = *tag.Value
 				}
 			}
-			instanceID := *inst.InstanceID
+			instanceID := *inst.InstanceId
 			state := *inst.State.Name
-			publicDNSName := *inst.PublicDNSName
 
-			fmt.Printf("%-8s\t%-8s\t%-40s\t%-50s\n", state, instanceID, name, publicDNSName)
+			var publicDNSName = ""
+			var publicIpAddress = ""
+			var privateIpAddress = ""
+			if (inst.PublicDnsName != nil) {
+				publicDNSName = *inst.PublicDnsName
+			}
+
+			if (inst.PublicIpAddress != nil) {
+				publicIpAddress = *inst.PublicIpAddress
+			}
+
+			if (inst.PrivateIpAddress != nil) {
+				privateIpAddress = *inst.PrivateIpAddress
+			}
+
+			fmt.Printf(
+				"\x1b[33m%-8s\x1b[0m\t%-10s\t%-30s\t%-15s\t%-50s\t%-15s\n",
+				state, instanceID, name, publicIpAddress, publicDNSName, privateIpAddress)
 		}
 	}
 	return 0
