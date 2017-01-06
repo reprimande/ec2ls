@@ -64,7 +64,7 @@ func run() int {
 			}
 
 			fmt.Printf(
-				"\x1b[33m%-8s\x1b[0m\t%-10s\t%-30s\t%-15s\t%-50s\t%-15s\n",
+				"\x1b[33m%-8s\x1b[0m\t%-20s\t%-30s\t%-15s\t%-50s\t%-15s\n",
 				state, instanceID, name, publicIpAddress, publicDNSName, privateIpAddress)
 		}
 	}
