@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
@@ -25,7 +26,12 @@ func main() {
 }
 
 func run() int {
-	svc := ec2.New(&aws.Config{Region: aws.String("ap-northeast-1")})
+	sess, err := session.NewSession()
+	if err != nil {
+		panic(err)
+	}
+
+	svc := ec2.New(sess, &aws.Config{Region: aws.String("ap-northeast-1")})
 	resp, err := svc.DescribeInstances(nil)
 	if err != nil {
 		panic(err)
@@ -58,7 +64,7 @@ func run() int {
 			}
 
 			fmt.Printf(
-				"\x1b[33m%-8s\x1b[0m\t%-10s\t%-30s\t%-15s\t%-50s\t%-15s\n",
+				"\x1b[33m%-8s\x1b[0m\t%-20s\t%-30s\t%-15s\t%-50s\t%-15s\n",
 				state, instanceID, name, publicIpAddress, publicDNSName, privateIpAddress)
 		}
 	}
